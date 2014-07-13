@@ -1,5 +1,8 @@
 package icac.irc.client;
 
+import icac.irc.client.datatypes.UInt32;
+import icac.irc.client.datatypes.sVLQ;
+import icac.irc.client.datatypes.exception.InvalidUIntException;
 import icac.irc.client.logger.Logger;
 
 import java.io.DataInputStream;
@@ -32,7 +35,12 @@ public class Client {
 			this.dis = new DataInputStream(socket.getInputStream());
 			new Thread() {
 				public void run() {
-					listen();
+					try {
+						listen();
+					} catch (InvalidUIntException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}.start();
 		} catch(Exception e) {
@@ -44,24 +52,42 @@ public class Client {
 		return this.socket;
 	}
 	
-	public void listen() {
+	public void listen() throws InvalidUIntException {
+		System.out.println("listening");
 		int available;
 		try {
-			while((available = dis.available()) != 0) {
-				byte id = dis.readByte();
-				logger.Log("Packet received. id: " + id);
-				if(id == 0) {
-					logger.Log("" + dis.readByte());
-					logger.Log("Protocol Version: " + dis.readInt());
+			Thread.sleep(2500);
+			while(true) {
+				while ((available = dis.available()) == 0)
+				{
+					Thread.sleep(100);
 				}
-				logger.Log("Data available: " + (available - 1));
-				/*System.out.println("Data(Byte by Byte):");
-				for(int i = 0; i < available; i++) {
-					System.out.println(dis.read());
-				}*/
+				byte id = dis.readByte();
+				sVLQ payloadLength = new sVLQ(dis.readByte());
+				available = available - 1 - payloadLength.getBytes().length;
+				byte[] bytes = new byte[available];
+				for (int i = 0; i < available; i++)
+				{
+					bytes[i] = dis.readByte();
+				}
+				if (id == 0)
+				{
+					logger.Log("ID 0 = Protocol Version (" + available + " bytes available)");
+					logger.Log("Protocol Version is " + new UInt32(bytes).getInt());
+				}
+				else
+				{
+					logger.Log("Packet id " + id + " rcvd");
+					logger.Log("available says " + available);
+					logger.Log("sVLQ length = " + payloadLength.getLong());
+					logger.Log("Created bytes["+available+"], but i dont know what to do with it");
+				}
+				Thread.sleep(100);
 			}
 		} catch (IOException e) {
-			logger.Log(e);
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }

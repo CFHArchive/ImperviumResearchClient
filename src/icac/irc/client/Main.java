@@ -9,20 +9,20 @@ public class Main {
 	public static void main(String[] args) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String host = "";
-        int port = 0;
+        int port = 21025;
         
-        System.out.print("Enter Host:");
+        System.out.print("Enter Host: ");
         try {
 			host = br.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
         
-        System.out.print("Enter Port:");
+        System.out.print("Enter Port (default 21025): ");
         try{
             port = Integer.parseInt(br.readLine());
         } catch(NumberFormatException e){
-			e.printStackTrace();
+//			e.printStackTrace();
         } catch (IOException e) {
 			e.printStackTrace();
 		}
