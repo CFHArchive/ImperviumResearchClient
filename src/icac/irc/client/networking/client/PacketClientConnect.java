@@ -9,9 +9,9 @@ import icac.irc.client.datatypes.exception.VLQNegativeException;
 import icac.irc.client.logger.LogType;
 import icac.irc.client.networking.IPacket;
 import icac.irc.client.networking.PacketPayload;
+import icac.irc.client.networking.StarboundInputStream;
 import icac.irc.client.networking.StarboundOutputStream;
 
-import java.io.DataInputStream;
 import java.io.UnsupportedEncodingException;
 
 public class PacketClientConnect implements IPacket {
@@ -71,7 +71,7 @@ public class PacketClientConnect implements IPacket {
 	}
 
 	@Override
-	public void read(DataInputStream dis) throws Exception {
+	public void read(StarboundInputStream sis) throws Exception {
 		//Client->Server Packet
 	}
 

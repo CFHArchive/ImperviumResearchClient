@@ -4,9 +4,8 @@ import icac.irc.client.datatypes.UInt32;
 import icac.irc.client.datatypes.UInt8;
 import icac.irc.client.networking.IPacket;
 import icac.irc.client.networking.PacketPayload;
+import icac.irc.client.networking.StarboundInputStream;
 import icac.irc.client.networking.StarboundOutputStream;
-
-import java.io.DataInputStream;
 
 public class PacketChatReceived implements IPacket {
 
@@ -31,7 +30,7 @@ public class PacketChatReceived implements IPacket {
 	}
 
 	@Override
-	public void read(DataInputStream dis) throws Exception {
+	public void read(StarboundInputStream sis) throws Exception {
 		//TODO: Read packet.
 	}
 

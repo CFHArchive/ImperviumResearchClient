@@ -4,9 +4,8 @@ import icac.irc.client.datatypes.UInt8;
 import icac.irc.client.datatypes.sVLQ;
 import icac.irc.client.networking.IPacket;
 import icac.irc.client.networking.PacketPayload;
+import icac.irc.client.networking.StarboundInputStream;
 import icac.irc.client.networking.StarboundOutputStream;
-
-import java.io.DataInputStream;
 
 public class PacketProtocolVersion implements IPacket {
 
@@ -28,9 +27,9 @@ public class PacketProtocolVersion implements IPacket {
 	}
 
 	@Override
-	public void read(DataInputStream dis) throws Exception {
-		payload.setBytes(new sVLQ(dis.readByte()).getBytes());
-		this.protocolVersion = dis.readInt();
+	public void read(StarboundInputStream sis) throws Exception {
+		payload.setBytes(new sVLQ(sis.readByte()).getBytes());
+		this.protocolVersion = sis.readInt();
 	}
 	
 	public int getProtocolVersion() {

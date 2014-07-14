@@ -5,9 +5,9 @@ import icac.irc.client.datatypes.sVLQ;
 import icac.irc.client.datatypes.exception.InvalidUIntException;
 import icac.irc.client.logger.Logger;
 import icac.irc.client.networking.Packets;
+import icac.irc.client.networking.StarboundInputStream;
 import icac.irc.client.networking.StarboundOutputStream;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -16,7 +16,7 @@ public class Client {
 	public final static int version = 643;
 	private Socket socket;
 	private StarboundOutputStream sos;
-	private DataInputStream dis;
+	private StarboundInputStream sis;
 	public static Logger logger;
 	
 	private String host;
@@ -33,7 +33,7 @@ public class Client {
 		try {
 			this.socket = new Socket(this.host, this.port);
 			this.sos = new StarboundOutputStream(socket.getOutputStream());
-			this.dis = new DataInputStream(socket.getInputStream());
+			this.sis = new StarboundInputStream(socket.getInputStream());
 			new Thread() {
 				public void run() {
 					try {
@@ -59,24 +59,27 @@ public class Client {
 		try {
 			Thread.sleep(2500);
 			while(true) {
-				while ((available = dis.available()) == 0)
+				while ((available = sis.available()) == 0)
 				{
 					Thread.sleep(100);
 				}
-				byte id = dis.readByte();
-				sVLQ payloadLength = new sVLQ(dis.readByte());
+				byte id = sis.readByte();
+				sVLQ payloadLength = new sVLQ(sis.readByte());
 				available = available - 1 - payloadLength.getBytes().length;
+				if(available < payloadLength.getLong()) {
+					Thread.sleep(100);
+				}
 				byte[] bytes = new byte[available];
 				for (int i = 0; i < available; i++)
 				{
-					bytes[i] = dis.readByte();
+					bytes[i] = sis.readByte();
 				}
 				if (id == 0)
 				{
 					logger.Log("ID 0 = Protocol Version (" + available + " bytes available)");
 					logger.Log("Protocol Version is " + new UInt32(bytes).getInt());
 					//PacketClientConnect pcc = new PacketClientConnect();
-					//pcc.write(sos);
+					//pcc.read(sis);
 				}
 				else
 				{
