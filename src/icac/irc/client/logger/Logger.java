@@ -8,13 +8,14 @@ import java.util.Date;
 
 public class Logger {
 
-	private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("dd-MM-yyyy");
-	private static SimpleDateFormat enhancedFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss.S");
+	private SimpleDateFormat simpleFormatter = new SimpleDateFormat("dd-MM-yyyy");
+	private SimpleDateFormat enhancedFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss.S");
 	
 	File logDirectory = new File("Logs");
 	File logFile = new File("Logs/" + getSimpleLogDate(new Date()) + ".txt");
 	
 	public Logger() {
+		System.setOut(new ImperviumPrintStream(System.out));
 		if(!logDirectory.exists()) {
 			logDirectory.mkdir();
 		}
@@ -41,22 +42,30 @@ public class Logger {
 	}
 	
 	public void Log(String message, LogType type) {
-		String prefix = "[" + type.getPrefix() + "][" + getEnhancedLogDate(new Date()) + "]";
+		String prefix = buildPrefix(type);
+		System.out.print(prefix + message + System.getProperty("line.separator"));
+		writeTofile(prefix + message);
+	}
+	
+	public void writeTofile(String message) {
 		try {
-			System.out.println(prefix + message);
 			FileWriter logWriter = new FileWriter(this.logFile, true);
-			logWriter.write(prefix + message + System.getProperty("line.separator"));
+			logWriter.write(message + System.getProperty("line.separator"));
 			logWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static String getSimpleLogDate(Date date) {
+	private String getSimpleLogDate(Date date) {
 		return new String(simpleFormatter.format(new Date()));
 	}
 	
-	private static String getEnhancedLogDate(Date date) {
+	private String getEnhancedLogDate(Date date) {
 		return new String(enhancedFormatter.format(new Date()));
+	}
+	
+	public String buildPrefix(LogType type) {
+		return "[" + type.getPrefix() + "][" + getEnhancedLogDate(new Date()) + "]";
 	}
 }
